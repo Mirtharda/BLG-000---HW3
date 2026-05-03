@@ -41,7 +41,7 @@ PEOPLE: list[str] = [
     "Isaac Newton",
     "Charles Darwin",
     "Mahatma Gandhi",
-    "Napoleon Bonaparte",
+    "Napoleon",
     "Cleopatra",
     "Stephen Hawking",
     "Ludwig van Beethoven",
@@ -60,7 +60,7 @@ PLACES: list[str] = [
     "Colosseum",
     "Hagia Sophia",
     "Statue of Liberty",
-    "Pyramids of Giza",
+    "Giza pyramid complex",
     "Mount Everest",
     # Additional (total ≥ 20)
     "Stonehenge",
@@ -154,18 +154,26 @@ def ingest_entities(
             print(f"  [skip]  {title}  (already in DB)")
             continue
 
-        try:
-            print(f"  [fetch] {title}…", end=" ", flush=True)
-            content, url = fetch_wikipedia(title)
-            conn.execute(
-                "INSERT INTO documents (title, type, content, url, char_count) "
-                "VALUES (?, ?, ?, ?, ?)",
-                (title, entity_type, content, url, len(content)),
-            )
-            conn.commit()
-            print(f"✓  {len(content):,} chars")
-        except Exception as exc:
-            print(f"✗  ERROR: {exc}")
+        for attempt in range(3):
+            try:
+                print(f"  [fetch] {title}…", end=" ", flush=True)
+                content, url = fetch_wikipedia(title)
+                conn.execute(
+                    "INSERT INTO documents (title, type, content, url, char_count) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (title, entity_type, content, url, len(content)),
+                )
+                conn.commit()
+                print(f"✓  {len(content):,} chars")
+                break
+            except Exception as exc:
+                if "429" in str(exc) and attempt < 2:
+                    wait = 10 * (attempt + 1)
+                    print(f"✗  rate limited, retrying in {wait}s…")
+                    time.sleep(wait)
+                else:
+                    print(f"✗  ERROR: {exc}")
+                    break
 
         time.sleep(DELAY)
 

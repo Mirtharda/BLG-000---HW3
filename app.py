@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from rag.generator    import check_ollama, generate, DEFAULT_MODEL
+from rag.generator    import check_ollama, generate, generate_stream, DEFAULT_MODEL
 from rag.retriever    import retrieve, classify_query
 from rag.vector_store import collection_stats, get_collection
 
@@ -40,7 +40,7 @@ with st.sidebar:
     n_results = st.slider(
         "Chunks to retrieve",
         min_value=3, max_value=10, value=5,
-        help="More chunks = more context but slower generation.",
+        help="3–5 recommended for CPU. More chunks = richer context but slower generation.",
     )
 
     show_sources = st.checkbox(
@@ -134,56 +134,58 @@ if prompt := st.chat_input("Ask about a famous person or place…"):
 
     # Generate assistant response
     with st.chat_message("assistant"):
-        with st.spinner("Retrieving context and generating answer…"):
-            try:
-                query_type    = classify_query(prompt)
-                chunks, _     = retrieve(prompt, n_results=n_results)
-                answer        = generate(prompt, chunks, model=model)
+        with st.spinner("Retrieving context…"):
+            query_type = classify_query(prompt)
+            chunks, _  = retrieve(prompt, n_results=n_results)
 
-                st.markdown(answer)
+        try:
+            # Stream tokens live so the user sees output immediately
+            answer = st.write_stream(
+                generate_stream(prompt, chunks, model=model)
+            )
 
-                type_label = {
-                    "person": "👤 person query",
-                    "place":  "📍 place query",
-                    "both":   "🔀 mixed / open query",
-                }
-                st.caption(
-                    f"{type_label.get(query_type, query_type)} · "
-                    f"{len(chunks)} chunks retrieved"
-                )
+            type_label = {
+                "person": "👤 person query",
+                "place":  "📍 place query",
+                "both":   "🔀 mixed / open query",
+            }
+            st.caption(
+                f"{type_label.get(query_type, query_type)} · "
+                f"{len(chunks)} chunks retrieved"
+            )
 
-                if show_sources and chunks:
-                    with st.expander("📄 Retrieved source chunks"):
-                        for i, src in enumerate(chunks, 1):
-                            meta       = src.get("metadata", {})
-                            entity     = meta.get("entity", "—")
-                            etype      = meta.get("type", "—")
-                            similarity = round(1.0 - src.get("distance", 1.0), 3)
-                            st.markdown(
-                                f"**[{i}] {entity}** ({etype}) — "
-                                f"similarity: `{similarity}`"
-                            )
-                            preview = src["text"]
-                            if len(preview) > 400:
-                                preview = preview[:400] + "…"
-                            st.text(preview)
-                            if i < len(chunks):
-                                st.divider()
+            if show_sources and chunks:
+                with st.expander("📄 Retrieved source chunks"):
+                    for i, src in enumerate(chunks, 1):
+                        meta       = src.get("metadata", {})
+                        entity     = meta.get("entity", "—")
+                        etype      = meta.get("type", "—")
+                        similarity = round(1.0 - src.get("distance", 1.0), 3)
+                        st.markdown(
+                            f"**[{i}] {entity}** ({etype}) — "
+                            f"similarity: `{similarity}`"
+                        )
+                        preview = src["text"]
+                        if len(preview) > 400:
+                            preview = preview[:400] + "…"
+                        st.text(preview)
+                        if i < len(chunks):
+                            st.divider()
 
-                st.session_state.messages.append({
-                    "role":       "assistant",
-                    "content":    answer,
-                    "sources":    chunks,
-                    "query_type": query_type,
-                })
+            st.session_state.messages.append({
+                "role":       "assistant",
+                "content":    answer,
+                "sources":    chunks,
+                "query_type": query_type,
+            })
 
-            except Exception as exc:
-                err = (
-                    f"❌ **Error:** {exc}\n\n"
-                    "Make sure Ollama is running (`ollama serve`) "
-                    "and the index is built (`python build_index.py`)."
-                )
-                st.error(err)
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": err}
-                )
+        except Exception as exc:
+            err = (
+                f"❌ **Error:** {exc}\n\n"
+                "Make sure Ollama is running (`ollama serve`) "
+                "and the index is built (`python build_index.py`)."
+            )
+            st.error(err)
+            st.session_state.messages.append(
+                {"role": "assistant", "content": err}
+            )

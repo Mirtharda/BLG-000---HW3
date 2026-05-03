@@ -20,8 +20,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
-CHUNK_SIZE = 500    # target characters per chunk
-OVERLAP    = 100    # characters of overlap between consecutive chunks
+CHUNK_SIZE = 800    # target characters per chunk
+OVERLAP    = 150    # characters of overlap between consecutive chunks
 MIN_CHUNK  = 80     # discard tiny trailing chunks
 
 
