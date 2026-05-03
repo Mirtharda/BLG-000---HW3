@@ -1,0 +1,12 @@
+# BLG483E HW3 — Local Wikipedia RAG Assistant
+# Install with:  pip install -r requirements.txt
+
+# Core RAG stack
+sentence-transformers>=2.7.0     # local embeddings (all-MiniLM-L6-v2)
+chromadb>=0.5.0                  # local vector store
+
+# Chat UI
+streamlit>=1.35.0
+
+# Standard-library modules used (no install needed):
+#   sqlite3, urllib, json, argparse, re, pathlib, time, os
