@@ -79,7 +79,7 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
-    st.caption("BLG483E HW3 · Local Wikipedia RAG")
+    st.caption("BLG000 HW3 · Local Wikipedia RAG")
 
 # ─── Main chat area ────────────────────────────────────────────────────────────
 

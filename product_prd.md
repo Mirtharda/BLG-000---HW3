@@ -1,7 +1,7 @@
 # Product Requirements Document
 ## Local Wikipedia RAG Assistant
 
-**Course:** BLG483E — Artificial Intelligence  
+**Course:** BLG000 — Artificial Intelligence  
 **Project:** HW3  
 **Version:** 1.0
 

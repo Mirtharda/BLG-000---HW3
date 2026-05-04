@@ -117,7 +117,7 @@ def fetch_wikipedia(title: str) -> tuple[str, str]:
     api_url = f"{WIKI_API}?{params}"
     req = urllib.request.Request(
         api_url,
-        headers={"User-Agent": "BLG483E-HW3/1.0 (educational project)"},
+        headers={"User-Agent": "BLG000-HW3/1.0 (educational project)"},
     )
 
     with urllib.request.urlopen(req, timeout=15) as resp:

@@ -1,4 +1,4 @@
-# BLG483E HW3 — Local Wikipedia RAG Assistant
+# BLG000 HW3 — Local Wikipedia RAG Assistant
 # Install with:  pip install -r requirements.txt
 
 # Core RAG stack

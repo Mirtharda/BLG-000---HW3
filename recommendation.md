@@ -1,7 +1,7 @@
 # Production Deployment Recommendation
 
 **Project:** Local Wikipedia RAG Assistant  
-**Course:** BLG483E HW3
+**Course:** BLG000 HW3
 
 ---
 

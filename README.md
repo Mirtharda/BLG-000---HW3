@@ -229,4 +229,4 @@ hw3/
 ## Links
 
 - **GitHub Repository:** _[(https://github.com/Mirtharda/BLG-000---HW3.git)]_
-- **Demo Video:** _[Add your Loom / YouTube link here]_
+- **Demo Video:** _[(https://youtu.be/2hbbRouzk9A)]_

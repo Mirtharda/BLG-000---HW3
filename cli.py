@@ -23,7 +23,7 @@ from rag.vector_store import collection_stats, get_collection
 
 BANNER = r"""
 ╔══════════════════════════════════════════════════════════════╗
-║        Local Wikipedia RAG Assistant  —  BLG483E HW3        ║
+║        Local Wikipedia RAG Assistant  —  BLG000 HW3        ║
 ╚══════════════════════════════════════════════════════════════╝
 Type your question and press Enter.
 Commands:  /sources  /clear  /quit
